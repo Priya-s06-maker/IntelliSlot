@@ -134,8 +134,14 @@ appt.duration_minutes || 30,
 roomId:
 ROOMS.find(
 r =>
-String(r.id) === String(appt.room_id)
-)?.id || "",
+Number(
+r.adminId.split("-")[1]
+)
+===
+Number(appt.room_id)
+)?.id
+||
+"",
 
 description:
 appt.description || ""
@@ -164,6 +170,20 @@ duration_minutes:
 editForm.duration,
 
 room_id:
+ROOMS.find(
+r =>
+String(r.id) === String(editForm.roomId)
+)?.adminId
+?.split("-")[1]
+?
+Number(
+ROOMS.find(
+r =>
+String(r.id) === String(editForm.roomId)
+)
+.adminId.split("-")[1]
+)
+:
 editAppt.room_id,
 
 description:
@@ -425,10 +445,10 @@ style={S.editBtn}
 
 onClick={() => {
 
-toast.info(
-"You can edit pending appointments in the next version."
-);
-
+// toast.info(
+// "You can edit pending appointments in the next version."
+// );
+openEdit(a)
 }}
 
 >
