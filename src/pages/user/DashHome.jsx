@@ -267,11 +267,8 @@
 
 import { useState, useEffect } from "react";
 import {
-  getUserAppointments,
-  syncAppointmentStatuses,
   getNotifications,
   markAllNotificationsRead,
-  getUnreadCount,
   formatDate,
   formatTime,
   getStatusColor,
@@ -284,38 +281,269 @@ export default function DashHome() {
   const [notifs, setNotifs] = useState([]);
   const [showNotifs, setShowNotifs] = useState(false);
 
-  function load() {
-    syncAppointmentStatuses();
-    const a = getUserAppointments(session.id);
-    setAppts(a);
-    setNotifs(getNotifications(session.id));
-  }
+  async function load() {
+
+try {
+
+const response =
+await fetch(
+`http://127.0.0.1:8001/user/${session.id}/appointments`
+);
+
+const data =
+await response.json();
+console.log(
+"DASHBOARD APPTS",
+data
+);
+setAppts(
+Array.isArray(data)
+?
+data
+:
+[]
+);
+
+setNotifs(
+getNotifications(session.id)
+);
+
+}
+
+catch {
+
+setAppts([]);
+
+}
+
+}
 
   useEffect(() => { load(); }, []);
 
-  const now = new Date();
+  const now =
+new Date();
 
-  const upcoming = appts.filter(a =>
-    ["pending","approved"].includes(a.status) && new Date(`${a.date}T${a.time}`) > now
-  ).sort((a,b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+const normalized =
+appts.map(a=>{
 
-  const thisWeekEnd = new Date(now);
-  thisWeekEnd.setDate(now.getDate() + 7);
+const dt =
+new Date(
+`${a.appointment_date}T${a.appointment_time}`
+);
 
-  const thisWeek = upcoming.filter(a => {
-    const d = new Date(`${a.date}T${a.time}`);
-    return d >= now && d <= thisWeekEnd;
-  });
+const missed =
+a.status?.toLowerCase()==="accepted"
+&&
+dt < now;
 
-  const stats = [
-    { label: "Total",     value: appts.length,                                            icon: "📋", color: "#818CF8" },
-    { label: "Upcoming",  value: upcoming.length,                                          icon: "🗓️", color: "#22D3EE" },
-    { label: "Approved",  value: appts.filter(a => a.status==="approved").length,          icon: "✅", color: "#10B981" },
-    { label: "Pending",   value: appts.filter(a => a.status==="pending").length,           icon: "⏳", color: "#FBB444" },
-  ];
+return {
 
-  const next = upcoming[0];
-  const unread = notifs.filter(n => !n.read).length;
+...a,
+
+effectiveStatus:
+missed
+?
+"missed"
+:
+a.status?.toLowerCase(),
+
+date:
+a.appointment_date,
+
+time:
+a.appointment_time,
+
+title:
+a.appointment_title,
+
+duration:
+a.duration_minutes,
+
+roomId:
+a.room_id
+
+};
+
+});
+
+const upcoming =
+normalized.filter(a =>
+
+a.status?.toLowerCase() === "accepted"
+
+&&
+
+new Date(
+`${a.date}T${a.time}`
+)
+>
+now
+
+);
+
+const thisWeekEnd =
+new Date(now);
+
+thisWeekEnd.setDate(
+now.getDate() + 7
+);
+
+const thisWeek =
+upcoming.filter(a => {
+
+const d =
+new Date(
+`${a.date}T${a.time}`
+);
+
+return (
+d >= now
+&&
+d <= thisWeekEnd
+);
+
+});
+const stats = [
+
+{
+label:"Total",
+value:
+appts.length,
+icon:"📋",
+color:"#818CF8"
+},
+
+{
+label:"Upcoming",
+
+value:
+
+appts.filter(a=>{
+
+const dt =
+new Date(
+`${a.appointment_date}T${a.appointment_time}`
+);
+
+return (
+
+a.status?.toLowerCase()==="accepted"
+
+&&
+
+dt > now
+
+);
+
+}).length,
+
+icon:"🗓️",
+
+color:"#22D3EE"
+},
+
+{
+label:"Pending",
+
+value:
+
+appts.filter(a=>{
+
+const dt =
+new Date(
+`${a.appointment_date}T${a.appointment_time}`
+);
+
+return (
+
+a.status?.toLowerCase()==="pending"
+
+&&
+
+dt > now
+
+);
+
+}).length,
+
+icon:"⏳",
+
+color:"#FBB444"
+},
+
+{
+label:"Cancelled",
+
+value:
+
+appts.filter(
+a=>
+
+[
+"cancelled",
+"rejected"
+]
+
+.includes(
+a.status?.toLowerCase()
+)
+
+).length,
+
+icon:"❌",
+
+color:"#EF4444"
+},
+
+{
+label:"Missed",
+
+value:
+
+appts.filter(a=>{
+
+const dt =
+new Date(
+`${a.appointment_date}T${a.appointment_time}`
+);
+
+return (
+
+[
+"accepted",
+"pending"
+]
+
+.includes(
+a.status?.toLowerCase()
+)
+
+&&
+
+dt < now
+
+);
+
+}).length,
+
+icon:"⌛",
+
+color:"#F97316"
+}
+
+];
+
+const next =
+upcoming[0];
+
+const unread =
+notifs.filter(
+n=>!n.read
+).length;
+
+  
+
+  
 
   function handleNotifOpen() {
     setShowNotifs(true);

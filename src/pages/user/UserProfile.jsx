@@ -294,19 +294,7 @@ toast.error(
         <div style={{ flex: 1 }}>
           <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 22, color: "var(--text-primary)", margin: "0 0 4px" }}>{user.name}</h2>
           <p style={{ color: "var(--text-secondary)", fontSize: 14, margin: "0 0 12px" }}>{user.email}</p>
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-            {[
-              { label: "Total",     val: appts.length, color: "#818CF8" },
-              { label: "Upcoming",  val: upcoming,      color: "#22D3EE" },
-              { label: "Completed", val: completed,     color: "#10B981" },
-              { label: "Cancelled", val: cancelled,     color: "#EF4444" },
-            ].map(s => (
-              <div key={s.label} style={{ textAlign: "center" }}>
-                <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: s.color }}>{s.val}</div>
-                <div style={{ color: "var(--text-muted)", fontSize: 11 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
+        
         </div>
       </div>
 
