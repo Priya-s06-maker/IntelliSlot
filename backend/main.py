@@ -191,7 +191,66 @@ def change_password(
         "success":
         True
     }
+from pydantic import BaseModel
 
+
+class AdminPasswordUpdate(BaseModel):
+    email: str
+    current: str
+    new: str
+
+
+@app.put("/admin/change-password")
+def change_admin_password(
+    data: AdminPasswordUpdate,
+    db: Session = Depends(get_db)
+):
+
+    user = (
+        db.query(User)
+        .filter(
+            User.email == data.email
+        )
+        .first()
+    )
+
+    if not user:
+
+        return {
+            "success": False,
+            "message": "Admin not found"
+        }
+
+    print("DB PASSWORD:", user.password)
+    print("CURRENT:", data.current)
+
+    if (
+        user.password.strip()
+        !=
+        data.current.strip()
+    ):
+
+        return {
+            "success": False,
+            "message": "Current password incorrect"
+        }
+
+    user.password = data.new
+
+    db.add(user)
+
+    db.commit()
+
+    db.refresh(user)
+
+    print(
+        "UPDATED PASSWORD:",
+        user.password
+    )
+
+    return {
+        "success": True
+    }
 class AppointmentCreate(BaseModel):
 
     user_id: int
