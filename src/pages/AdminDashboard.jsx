@@ -51,6 +51,11 @@ new:"",
 confirm:""
 
 });
+const [showPassword, setShowPassword] = useState({
+  current: false,
+  new: false,
+  confirm: false
+});
   const now = new Date();
 
   const stats = {
@@ -766,9 +771,17 @@ Change Password
 Current Password
 </label>
 
+<div style={{ position: "relative", marginBottom: "20px" }}>
+
 <input
 
-type="password"
+type={
+showPassword.current
+?
+"text"
+:
+"password"
+}
 
 value={password.current}
 
@@ -790,30 +803,74 @@ width:"100%",
 
 padding:"14px",
 
-marginTop:"10px",
-
-marginBottom:"25px",
+paddingRight:"45px",
 
 background:"#0F172A",
 
 color:"white",
 
-border:
-"1px solid #334155",
+border:"1px solid #334155",
 
 borderRadius:"10px"
 
 }}
+
 />
+
+<span
+
+onClick={()=>
+
+setShowPassword({
+
+...showPassword,
+
+current:!showPassword.current
+
+})
+
+}
+
+style={{
+
+position:"absolute",
+
+right:"15px",
+
+top:"50%",
+
+transform:"translateY(-50%)",
+
+cursor:"pointer",
+
+fontSize:"18px"
+
+}}
+
+>
+
+{showPassword.current ? "🙈" : "👁"}
+
+</span>
+
+</div>
 
 
 <label>
 New Password
 </label>
 
+<div style={{ position: "relative", marginBottom: "25px" }}>
+
 <input
 
-type="password"
+type={
+showPassword.new
+?
+"text"
+:
+"password"
+}
 
 value={password.new}
 
@@ -835,30 +892,76 @@ width:"100%",
 
 padding:"14px",
 
-marginTop:"10px",
+paddingRight:"45px",
 
-marginBottom:"25px",
+marginTop:"10px",
 
 background:"#0F172A",
 
 color:"white",
 
-border:
-"1px solid #334155",
+border:"1px solid #334155",
 
 borderRadius:"10px"
 
 }}
+
 />
+
+<span
+
+onClick={()=>
+
+setShowPassword({
+
+...showPassword,
+
+new:!showPassword.new
+
+})
+
+}
+
+style={{
+
+position:"absolute",
+
+right:"15px",
+
+top:"50%",
+
+transform:"translateY(-50%)",
+
+cursor:"pointer",
+
+fontSize:"18px"
+
+}}
+
+>
+
+{showPassword.new ? "🙈" : "👁"}
+
+</span>
+
+</div>
 
 
 <label>
 Confirm Password
 </label>
 
+<div style={{ position: "relative", marginBottom: "25px" }}>
+
 <input
 
-type="password"
+type={
+showPassword.confirm
+?
+"text"
+:
+"password"
+}
 
 value={password.confirm}
 
@@ -880,22 +983,59 @@ width:"100%",
 
 padding:"14px",
 
-marginTop:"10px",
+paddingRight:"45px",
 
-marginBottom:"25px",
+marginTop:"10px",
 
 background:"#0F172A",
 
 color:"white",
 
-border:
-"1px solid #334155",
+border:"1px solid #334155",
 
 borderRadius:"10px"
 
 }}
+
 />
 
+<span
+
+onClick={()=>
+
+setShowPassword({
+
+...showPassword,
+
+confirm:!showPassword.confirm
+
+})
+
+}
+
+style={{
+
+position:"absolute",
+
+right:"15px",
+
+top:"50%",
+
+transform:"translateY(-50%)",
+
+cursor:"pointer",
+
+fontSize:"18px"
+
+}}
+
+>
+
+{showPassword.confirm ? "🙈" : "👁"}
+
+</span>
+
+</div>
 
 <button
 

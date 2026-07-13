@@ -559,23 +559,57 @@ carnegie:1
 )
 const data =
 await response.json();
-
+console.log(data);
 setSubmitting(false);
 
-if (!response.ok) {
+// if (!response.ok) {
 
-toast.error(
-"Booking failed"
-);
+// toast.error(
+// "Booking failed"
+// );
 
-return;
+// return;
+
+// }
+
+// toast.success(
+// "Appointment submitted for admin approval 🎉"
+// );
+if(data.ai && data.ai.conflict){
+
+    toast.error(
+        "❌ " + data.ai.reason
+    );
+
+    if (data.ai.suggested_slot) {
+
+        toast.info(
+            "💡 Suggested Slot: " +
+            data.ai.suggested_slot
+        );
+
+    }
+
+    return;
 
 }
 
-toast.success(
-"Appointment submitted for admin approval 🎉"
-);
+if (data.success) {
 
+    toast.success(
+        "Appointment submitted for admin approval 🎉"
+    );
+
+}
+else {
+
+    toast.error(
+        "Booking failed."
+    );
+
+    return;
+
+}
 setForm({
 title: "",
 type: "meeting",

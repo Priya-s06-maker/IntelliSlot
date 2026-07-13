@@ -4,4 +4,4 @@ build/
 backend/__pycache__/
 backend/*.pyc
 
-.env
+backend/.env
