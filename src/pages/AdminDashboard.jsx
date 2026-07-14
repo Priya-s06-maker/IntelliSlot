@@ -95,7 +95,7 @@ const [showPassword, setShowPassword] = useState({
   }, []);
 
   async function updateStatus(id, status) {
-    await fetch(`http://127.0.0.1:8001/appointments/${id}`, {
+    await fetch(`http://127.0.0.1:8001/appointments/${id}/status`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status })

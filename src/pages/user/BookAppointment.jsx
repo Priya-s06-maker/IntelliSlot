@@ -357,6 +357,12 @@ function formatTimeLabel(t) {
 const today = new Date().toISOString().split("T")[0];
 
 export default function BookAppointment() {
+   const [showAiPopup, setShowAiPopup] = useState(false);
+
+  const [aiResult, setAiResult] = useState({
+      reason: "",
+      suggested_slot: ""
+  });
   const session = JSON.parse(sessionStorage.getItem("is_session") || "null");
 
   const [form, setForm] = useState({
@@ -404,28 +410,7 @@ export default function BookAppointment() {
     return null;
   }
 
-  // function handleSubmit() {
-  //   const err = validate();
-  //   if (err) { toast.error(err); return; }
 
-  //   if (isRoomSlotApproved(form.roomId, form.date, form.time)) {
-  //     toast.error("This room is already booked at that time. Please choose another slot.");
-  //     return;
-  //   }
-
-  //   setSubmitting(true);
-  //   const appt = createAppointment({
-  //     userId:      session.id,
-  //     userName:    session.name,
-  //     ...form,
-  //   });
-
-  //   setTimeout(() => {
-  //     setSubmitting(false);
-  //     toast.success("Appointment requested! Waiting for admin approval. 🎉");
-  //     setForm({ title: "", type: "meeting", date: "", time: "", duration: 60, roomId: "", description: "" });
-  //   }, 600);
-  // }
   function convertTime(time) {
 
 const [value, period] =
@@ -575,24 +560,22 @@ setSubmitting(false);
 // toast.success(
 // "Appointment submitted for admin approval 🎉"
 // );
-if(data.ai && data.ai.conflict){
+if (data.ai && data.ai.conflict) {
 
-    toast.error(
-        "❌ " + data.ai.reason
-    );
+    setAiResult({
 
-    if (data.ai.suggested_slot) {
+        reason: data.ai.reason,
 
-        toast.info(
-            "💡 Suggested Slot: " +
-            data.ai.suggested_slot
-        );
+        suggested_slot: data.ai.suggested_slot
 
-    }
+    });
+
+    setShowAiPopup(true);
 
     return;
 
 }
+
 
 if (data.success) {
 
@@ -788,6 +771,179 @@ Selected:
           {submitting ? "Submitting..." : "🗓️ Request Appointment"}
         </button>
       </div>
+      {showAiPopup && (
+
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.65)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999
+          }}
+        >
+
+          <div
+            style={{
+              width: "520px",
+              background: "#1E2937",
+              borderRadius: "18px",
+              padding: "30px",
+              border: "1px solid #475569",
+              boxShadow: "0 25px 60px rgba(0,0,0,0.5)"
+            }}
+          >
+
+            <h2
+              style={{
+                marginTop: 0,
+                color: "#818CF8",
+                textAlign: "center"
+              }}
+            >
+              🤖 IntelliSlot AI Assistant
+            </h2>
+
+            <h3
+              style={{
+                color: "#FBBF24",
+                textAlign: "center"
+              }}
+            >
+              Scheduling Conflict Detected
+            </h3>
+
+            <p
+              style={{
+                color: "#CBD5E1",
+                textAlign: "center",
+                marginBottom: "25px"
+              }}
+            >
+              Your requested appointment overlaps with an existing booking.
+            </p>
+
+            <div
+              style={{
+                background: "#0F172A",
+                padding: "15px",
+                borderRadius: "10px",
+                marginBottom: "20px"
+              }}
+            >
+
+              <strong style={{ color: "#F87171" }}>
+                Reason
+              </strong>
+
+              <p
+                style={{
+                  color: "#CBD5E1",
+                  marginTop: "10px"
+                }}
+              >
+                {aiResult.reason}
+              </p>
+
+            </div>
+
+            <div
+              style={{
+                background: "#052E16",
+                padding: "15px",
+                borderRadius: "10px",
+                marginBottom: "30px"
+              }}
+            >
+
+              <strong
+                style={{
+                  color: "#4ADE80"
+                }}
+              >
+                💡 Suggested Available Slot
+              </strong>
+
+              <h2
+                style={{
+                  color: "#86EFAC",
+                  marginTop: "12px"
+                }}
+              >
+                {aiResult.suggested_slot}
+              </h2>
+
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between"
+              }}
+            >
+
+              <button
+
+                onClick={() => {
+
+                  set("time", aiResult.suggested_slot);
+
+                  setShowAiPopup(false);
+
+                }}
+
+                style={{
+                  padding: "12px 18px",
+                  background: "#6366F1",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  fontWeight: "600"
+                }}
+
+              >
+
+                ✅ Use Suggested Slot
+
+              </button>
+
+              <button
+
+                onClick={() =>
+
+                  setShowAiPopup(false)
+
+                }
+
+                style={{
+                  padding: "12px 18px",
+                  background: "#374151",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "10px",
+                  cursor: "pointer"
+                }}
+
+              >
+
+                Choose Another Time
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
     </div>
   );
 }
